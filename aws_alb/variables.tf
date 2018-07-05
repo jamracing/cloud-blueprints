@@ -1,6 +1,6 @@
 variable "aws_region" {
   description = "Home AWS region"
-  default     = "us-east-1"
+  default     = "us-east-2"
 }
 
 variable "aws_az_count" {
@@ -33,16 +33,24 @@ variable "web_cluster_size" {
   default     = 3
 }
 
+variable "environment" {
+  default = "dev-8"
+}
+
+variable "developer" {
+  default = "Josh Loberant"
+}
+
 # HAPEE 1.7r1 Ubuntu Xenial 16.04 (20171024)
 variable "hapee_aws_amis" {
   default = {
-    "us-east-1" = "ami-5d489227"
+    "us-east-2" = "ami-24af8041"
   }
 }
 
 # Ubuntu Xenial 16.04 hvm ebs-ssd instance
 variable "ubuntu_aws_amis" {
   default = {
-    "us-east-1" = "ami-37991b4d"
+    "us-east-2" = "ami-6a003c0f"
   }
 }

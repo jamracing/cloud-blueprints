@@ -5,11 +5,14 @@ provider "aws" {
 data "aws_availability_zones" "all" {}
 
 resource "aws_vpc" "default" {
-  cidr_block           = "20.0.0.0/16"
-  enable_dns_hostnames = true
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = "true"
+  enable_dns_hostnames = "true"
 
   tags {
-    Name = "hapee_test_vpc"
+    Name        = "dp-vpc-${var.environment}"
+    Environment = "${var.environment}"
+    Developer   = "${var.developer}"
   }
 }
 
@@ -21,7 +24,9 @@ resource "aws_subnet" "tf_test_subnet" {
   map_public_ip_on_launch = true
 
   tags {
-    Name = "hapee_test_subnet"
+    Name        = "hapee_test_subnet-${var.environment}"
+    Environment = "${var.environment}"
+    Developer   = "${var.developer}"
   }
 }
 
@@ -29,7 +34,9 @@ resource "aws_internet_gateway" "gw" {
   vpc_id = "${aws_vpc.default.id}"
 
   tags {
-    Name = "hapee_test_ig"
+    Name        = "hapee_test_ig-${var.environment}"
+    Environment = "${var.environment}"
+    Developer   = "${var.developer}"
   }
 }
 
@@ -42,7 +49,9 @@ resource "aws_route_table" "r" {
   }
 
   tags {
-    Name = "aws_route_table"
+    Name        = "aws_route_table-${var.environment}"
+    Environment = "${var.environment}"
+    Developer   = "${var.developer}"
   }
 }
 
@@ -53,7 +62,7 @@ resource "aws_route_table_association" "a" {
 }
 
 resource "aws_security_group" "instance_sg1" {
-  name        = "instance_sg1"
+  name        = "instance_sg1-${var.environment}"
   description = "Instance (HAPEE/Web node) SG to pass tcp/22 by default"
   vpc_id      = "${aws_vpc.default.id}"
 
@@ -75,7 +84,7 @@ resource "aws_security_group" "instance_sg1" {
 }
 
 resource "aws_security_group" "instance_sg2" {
-  name        = "instance_sg2"
+  name        = "instance_sg2-${var.environment}"
   description = "Instance (HAPEE/Web node) SG to pass ELB traffic  by default"
   vpc_id      = "${aws_vpc.default.id}"
 
@@ -95,7 +104,7 @@ resource "aws_security_group" "instance_sg2" {
 }
 
 resource "aws_security_group" "alb" {
-  name        = "alb_sg"
+  name        = "alb_sg-${var.environment}"
   description = "Used in the terraform"
 
   vpc_id = "${aws_vpc.default.id}"
@@ -118,7 +127,7 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_lb" "hapee_alb" {
-  name = "hapee-test-alb"
+  name = "hapee-test-alb-${var.environment}"
 
   internal = false
 
@@ -126,12 +135,14 @@ resource "aws_lb" "hapee_alb" {
   security_groups = ["${aws_security_group.alb.id}"]
 
   tags {
-    Name = "hapee_alb"
+    Name        = "hapee_alb-${var.environment}"
+    Environment = "${var.environment}"
+    Developer   = "${var.developer}"
   }
 }
 
 resource "aws_lb_target_group" "hapee_alb_target" {
-  name = "hapee-test-alb-tg"
+  name = "hapee-test-alb-tg-${var.environment}"
 
   vpc_id = "${aws_vpc.default.id}"
 
@@ -150,7 +161,9 @@ resource "aws_lb_target_group" "hapee_alb_target" {
   }
 
   tags {
-    Name = "hapee_alb_tg"
+    Name        = "hapee_alb_tg-${var.environment}"
+    Environment = "${var.environment}"
+    Developer   = "${var.developer}"
   }
 }
 
@@ -189,7 +202,9 @@ resource "aws_instance" "web_node" {
   user_data              = "${file("web-userdata.sh")}"
 
   tags {
-    Name = "web_node_${count.index}"
+    Name        = "web_node_${var.environment}-${count.index}"
+    Environment = "${var.environment}"
+    Developer   = "${var.developer}"
   }
 }
 
@@ -215,6 +230,8 @@ resource "aws_instance" "hapee_node" {
   user_data              = "${data.template_file.hapee-userdata.rendered}"
 
   tags {
-    Name = "hapee_node_${count.index}"
+    Name        = "hapee_node_${var.environment}-${count.index}"
+    Environment = "${var.environment}"
+    Developer   = "${var.developer}"
   }
 }
